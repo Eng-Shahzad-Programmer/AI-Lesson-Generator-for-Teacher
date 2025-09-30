@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lesson Spark</title>
+  <style>
+    :root{
+      --bg: rgb(248,249,250);
+      --card: rgb(255,255,255);
+      --accent: rgb(76,175,80);
+      --accent-darker: rgb(56,142,60);
+      --download: rgb(33,150,243);
+      --download-darker: rgb(25,118,210);
+      --text: rgb(51,51,51);
+      --muted: rgb(117,117,117);
+      --border: rgb(200,200,200);
+      --result-bg: rgb(241,241,241);
+    }
+    html,body{height:100%; margin:0; background:var(--bg); color:var(--text); font-family: Arial, Helvetica, sans-serif;}
+    header { background: var(--accent); color: rgb(255,255,255); padding: 18px 12px; text-align:center; }
+    header h1 { margin: 0; font-size: 1.4rem; }
+    header p { margin: 6px 0 0 0; color: rgba(255,255,255,0.92); font-size:0.95rem; }
+    .container { max-width: 880px; margin: 22px auto; background: var(--card); border-radius:10px; padding:18px; box-shadow: 0 8px 30px rgba(20,30,60,0.06); }
+    label { display:block; margin-top:12px; font-weight:600; color:var(--text); }
+    select, input[type="text"], input[type="number"], textarea {
+      width:100%; padding:10px; margin-top:8px; border:1px solid var(--border); border-radius:6px; font-size:15px; box-sizing:border-box;
+      background: white;
+    }
+    .row { display:flex; gap:12px; }
+    .col { flex:1; }
+    .hint { font-size:13px; color:var(--muted); margin-top:6px; }
+    .controls { margin-top:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .btn {
+      padding:11px 14px; border-radius:8px; border:none; font-weight:600; cursor:pointer; font-size:15px;
+    }
+    .btn-generate { background: var(--accent); color: rgb(255,255,255); }
+    .btn-generate:hover { background: var(--accent-darker); }
+    .btn-download { background: var(--download); color: rgb(255,255,255); display:none; }
+    .btn-download:hover { background: var(--download-darker); }
+    #result { margin-top:18px; background: var(--result-bg); padding:14px; border-radius:8px; min-height:160px; white-space: pre-wrap; border:1px solid rgba(0,0,0,0.03); color:var(--text); }
+    @media (max-width:700px){
+      .row{flex-direction:column;}
+      .controls{flex-direction:column; align-items:stretch;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Lesson Spark</h1>
+    <p>Create teacher-ready lesson plans — fast.</p>
+  </header>
+  <main class="container">
+    <label for="topicSelect">1) Topic (choose suggestion or enter custom)</label>
+    <select id="topicSelect">
+      <option value="">-- Select suggested topic --</option>
+      <option value="Photosynthesis">Photosynthesis</option>
+      <option value="World War II">World War II</option>
+      <option value="Fractions and Decimals">Fractions and Decimals</option>
+      <option value="The Solar System">The Solar System</option>
+      <option value="Shakespeare — Romeo & Juliet">Shakespeare — Romeo & Juliet</option>
+      <option value="Water Cycle">Water Cycle</option>
+      <option value="Linear Equations - Introduction">Linear Equations - Introduction</option>
+    </select>
+    <div class="hint">Or type your own topic below</div>
+    <input id="topicCustom" type="text" placeholder="e.g. Introducing ratios to Grade 7 students">
+    <label for="subject">2) Subject</label>
+    <select id="subject">
+      <option value="">-- Select subject --</option>
+      <option value="Science">Science</option>
+      <option value="Mathematics">Mathematics</option>
+      <option value="History">History</option>
+      <option value="Literature">Literature</option>
+      <option value="Geography">Geography</option>
+      <option value="Computer Science">Computer Science</option>
+    </select>
+    <div class="row">
+      <div class="col">
+        <label for="grade">3) Grade / Class</label>
+        <select id="grade">
+          <option value="">-- Select grade --</option>
+          <option value="Grade 5">Grade 5</option>
+          <option value="Grade 6">Grade 6</option>
+          <option value="Grade 7">Grade 7</option>
+          <option value="Grade 8">Grade 8</option>
+          <option value="High School">High School</option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="curriculum">4) Curriculum (optional)</label>
+        <select id="curriculum">
+          <option value="">-- Select curriculum --</option>
+          <option value="Cambridge">Cambridge</option>
+          <option value="IB">IB</option>
+          <option value="CBSE">CBSE</option>
+          <option value="Local Board">Local Board</option>
+          <option value="American (Common Core)">American (Common Core)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <label for="duration">5) Duration</label>
+        <select id="duration">
+          <option value="">-- Select duration --</option>
+          <option value="30 minutes">30 minutes</option>
+          <option value="45 minutes">45 minutes</option>
+          <option value="60 minutes">60 minutes</option>
+          <option value="90 minutes">90 minutes</option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="style">6) Teaching Style</label>
+        <select id="style">
+          <option value="">-- Select teaching style --</option>
+          <option value="Interactive">Interactive</option>
+          <option value="Lecture-based">Lecture-based</option>
+          <option value="Project-based">Project-based</option>
+          <option value="Visual & Hands-on">Visual & Hands-on</option>
+        </select>
+      </div>
+    </div>
+    <div class="hint">Tip: choose suggested topic OR enter a custom topic. All other fields help tailor the plan.</div>
+    <div class="controls" style="margin-top:18px;">
+      <button id="generateBtn" class="btn btn-generate">Generate Lesson Plan</button>
+      <button id="downloadBtn" class="btn btn-download">Download as PDF</button>
+    </div>
+    <div id="result">Generated lesson plan will appear here.</div>
+  </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const generateBtn = document.getElementById('generateBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const resultDiv = document.getElementById('result');
+    function getTopicValue() {
+      const sel = document.getElementById('topicSelect').value.trim();
+      const custom = document.getElementById('topicCustom').value.trim();
+      return custom || sel;
+    }
+    async function generateLesson() {
+      const topic = getTopicValue();
+      const subject = document.getElementById('subject').value.trim();
+      const grade = document.getElementById('grade').value.trim();
+      const curriculum = document.getElementById('curriculum').value.trim();
+      const duration = document.getElementById('duration').value.trim();
+      const style = document.getElementById('style').value.trim();
+      if (!topic) { alert('Please choose or enter a topic'); return; }
+      if (!subject) { alert('Please select a subject'); return; }
+      if (!grade) { alert('Please select a grade'); return; }
+      if (!duration) { alert('Please select a duration'); return; }
+      resultDiv.textContent = '⏳ Generating lesson plan — please wait...';
+      downloadBtn.style.display = 'none';
+      try {
+        const resp = await fetch('/api/generate', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ topic, subject, grade, curriculum, duration, style })
+        });
+        const contentType = resp.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          const text = await resp.text();
+          resultDiv.textContent = '⚠️ Server error (not JSON): ' + text.slice(0,1000);
+          return;
+        }
+        const data = await resp.json();
+        const text = data.lesson || data.plan || data.output || data.message || data.result;
+        if (!text) {
+          resultDiv.textContent = '⚠️ Failed to generate lesson plan. ' + (data.error ? data.error : '');
+          return;
+        }
+        resultDiv.textContent = text;
+        downloadBtn.style.display = 'inline-block';
+        downloadBtn.onclick = () => {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF({unit:'pt', format:'a4'});
+          const margin = 40;
+          const maxWidth = 520;
+          doc.setFontSize(12);
+          const lines = doc.splitTextToSize(text, maxWidth);
+          let y = margin;
+          for (let i=0;i<lines.length;i++) {
+            if (y > 800) { doc.addPage(); y = margin; }
+            doc.text(lines[i], margin, y);
+            y += 14;
+          }
+          doc.save('lesson-plan.pdf');
+        };
+      } catch (err) {
+        resultDiv.textContent = '⚠️ Network error: ' + err.message;
+      }
+    }
+    generateBtn.addEventListener('click', generateLesson);
+    document.getElementById('topicCustom').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); generateLesson(); }
+    });
+  </script>
+</body>
+</html>
