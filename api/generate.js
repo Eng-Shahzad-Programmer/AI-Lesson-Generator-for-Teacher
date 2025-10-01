@@ -1,5 +1,3 @@
-
-
 import fetch from "node-fetch";
 
 export default async function handler(req, res) {
@@ -25,13 +23,18 @@ export default async function handler(req, res) {
       body: new URLSearchParams({ text: prompt }),
     });
 
+    const contentType = response.headers.get("content-type");
     let data;
-    try {
+
+    if (contentType && contentType.includes("application/json")) {
       data = await response.json();
-    } catch (jsonErr) {
+    } else {
       const text = await response.text();
-      console.error("❌ DeepAI raw response:", text);
-      return res.status(500).json({ error: "DeepAI did not return JSON", details: text });
+      console.error("❌ DeepAI raw response (non-JSON):", text);
+      return res.status(500).json({
+        error: "DeepAI did not return JSON",
+        details: text.slice(0, 300), // return first 300 chars
+      });
     }
 
     if (!response.ok) {
