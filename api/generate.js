@@ -1,4 +1,5 @@
-// api/generate.js
+
+
 import fetch from "node-fetch";
 
 export default async function handler(req, res) {
@@ -10,23 +11,11 @@ export default async function handler(req, res) {
     const { topic, subject, grade, curriculum, duration, teachingStyle } = req.body;
 
     if (!process.env.DEEPAI_API_KEY) {
-      return res.status(500).json({ error: "DEEPAI_API_KEY not set in environment variables" });
+      return res.status(500).json({ error: "DEEPAI_API_KEY not set" });
     }
 
-    // Build prompt
-    const prompt = `
-    Create a structured lesson plan with the following details:
-    - Topic: ${topic}
-    - Subject: ${subject}
-    - Grade: ${grade}
-    - Curriculum: ${curriculum}
-    - Duration: ${duration}
-    - Teaching Style: ${teachingStyle}
+    const prompt = `Create a detailed ${duration} lesson plan for grade ${grade} on the topic "${topic}" under ${curriculum} curriculum in ${subject}. Teaching style: ${teachingStyle}.`;
 
-    Please generate a clear and useful lesson plan for teachers.
-    `;
-
-    // Call DeepAI API
     const response = await fetch("https://api.deepai.org/api/text-generator", {
       method: "POST",
       headers: {
@@ -36,22 +25,26 @@ export default async function handler(req, res) {
       body: new URLSearchParams({ text: prompt }),
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (jsonErr) {
+      const text = await response.text();
+      console.error("❌ DeepAI raw response:", text);
+      return res.status(500).json({ error: "DeepAI did not return JSON", details: text });
+    }
 
     if (!response.ok) {
-      console.error("❌ DeepAI error response:", data);
-      return res.status(response.status).json({ error: "Failed to generate lesson plan", details: data });
+      return res.status(response.status).json({ error: data });
     }
 
     if (!data.output) {
-      return res.status(500).json({ error: "No output received from DeepAI", details: data });
+      return res.status(500).json({ error: "No output from DeepAI", details: data });
     }
 
-    // Send lesson plan back
     res.status(200).json({ plan: data.output });
-
-  } catch (error) {
-    console.error("❌ Server error:", error);
-    res.status(500).json({ error: "Server error", details: error.message });
+  } catch (err) {
+    console.error("❌ DeepAI error:", err);
+    res.status(500).json({ error: "Failed to generate lesson plan." });
   }
 }
