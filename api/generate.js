@@ -1,12 +1,12 @@
-import fetch from "node-fetch";
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { topic, subject, grade, curriculum, duration, teachingStyle } = req.body;
+    // Ensure body is parsed
+    const { topic, subject, grade, curriculum, duration, teachingStyle } =
+      typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
     if (!process.env.DEEPAI_API_KEY) {
       return res.status(500).json({ error: "DEEPAI_API_KEY not set" });
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
       console.error("❌ DeepAI raw response (non-JSON):", text);
       return res.status(500).json({
         error: "DeepAI did not return JSON",
-        details: text.slice(0, 300), // return first 300 chars
+        details: text.slice(0, 300),
       });
     }
 
